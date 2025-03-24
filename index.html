@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparação de Preços</title>
+  <style>
+    /* Estilos gerais */
+    :root {
+      --primary: #00c853;
+      --primary-dark: #009624;
+      --secondary: #6200ea;
+      --dark: #121212;
+      --darker: #0a0a0a;
+      --light: #e0e0e0;
+      --lighter: #f5f5f5;
+      --danger: #ff3d00;
+      --success: #00c853;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: var(--dark);
+      color: var(--light);
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    /* Gradiente animado no fundo */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #1a1a2e 100%);
+      z-index: -2;
+    }
+
+    /* Efeito de partículas (opcional) */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, transparent 0%, rgba(0, 200, 83, 0.03) 20%, transparent 40%),
+                  radial-gradient(circle at 80% 70%, transparent 0%, rgba(98, 0, 234, 0.03) 20%, transparent 40%);
+      z-index: -1;
+      animation: pulse 15s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.8; }
+      100% { opacity: 1; }
+    }
+
+    /* Container principal */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Cabeçalho */
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 40px;
+      font-size: 2.5rem;
+      position: relative;
+      display: inline-block;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      border-radius: 3px;
+    }
+
+    /* Estilos da tabela */
+    .table-container {
+      overflow-x: auto;
+      margin: 40px 0;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: rgba(30, 30, 30, 0.8);
+      backdrop-filter: blur(5px);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 16px 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    th {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.9rem;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+      transform: scale(1.01);
+      transition: all 0.2s ease;
+    }
+
+    td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+
+    /* Estilos para a diferença de preços */
+    .positive {
+      color: var(--success);
+      font-weight: bold;
+      position: relative;
+    }
+
+    .positive::before {
+      content: '↑';
+      margin-right: 5px;
+    }
+
+    .negative {
+      color: var(--danger);
+      font-weight: bold;
+      position: relative;
+    }
+
+    .negative::before {
+      content: '↓';
+      margin-right: 5px;
+    }
+
+    .neutral {
+      color: var(--light);
+    }
+
+    /* Estilos para o link do GitHub */
+    .github-link {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, #333, #000);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .github-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(135deg, #000, #333);
+    }
+
+    .github-link:active {
+      transform: translateY(0);
+    }
+
+    .github-link img {
+      width: 20px;
+      height: 20px;
+      filter: invert(1);
+    }
+
+    /* Badge para diferença */
+    .difference-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .positive-badge {
+      background-color: rgba(0, 200, 83, 0.2);
+      border-left: 3px solid var(--success);
+    }
+
+    .negative-badge {
+      background-color: rgba(255, 61, 0, 0.2);
+      border-left: 3px solid var(--danger);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      th, td {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+      }
+      
+      .github-link {
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 15px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 30px 10px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      th, td {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+      }
+      
+      .github-link {
+        bottom: 15px;
+        right: 15px;
+        padding: 8px 12px;
+      }
+    }
+
+    /* Efeito de brilho nos cabeçalhos */
+    th {
+      position: relative;
+      overflow: hidden;
+    }
+
+    th::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0) 45%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 55%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: rotate(30deg);
+      animation: shine 5s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Comparação de Preços</h1>
+    
+    <div class="table-container">
+      <table id="comparisonTable">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>São Vicente</th>
+            <th>Enxuto</th>
+            <th>Diferença</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Os dados serão inseridos aqui pelo JavaScript -->
+        </tbody>
+      </table>
+    </div>
+    
+    <footer>
+      <p>Atualizado em <span id="current-date"></span> | Comparação de preços entre mercados</p>
+    </footer>
+  </div>
+
+  <!-- Link para o GitHub -->
+  <a href="https://github.com/KeyzerCR" class="github-link" target="_blank" rel="noopener noreferrer">
+    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo">
+    Meu GitHub
+  </a>
+
+  <script>
+    // Dados dos produtos
+    const products = [
+      { name: "Caixa de Bombom Nestlé", saoVicente: 11.90, enxuto: 14.95 },
+      { name: "Chocolate Garoto 80g", saoVicente: 8.79, enxuto: 9.19 },
+      { name: "Bolacha Marilan Leite 350g", saoVicente: 7.59, enxuto: 7.49 },
+      { name: "Sabão Líquido Omo 3L", saoVicente: 42.99, enxuto: 44.99 },
+      { name: "Cerveja Heineken Lata 350ml", saoVicente: 5.49, enxuto: 4.29 },
+      { name: "Refrigerante Coca Cola Zero Mini Pet 200ml", saoVicente: 1.99, enxuto: 1.99 },
+      { name: "Maionese Heinz Squeeze 390g", saoVicente: 15.59, enxuto: 17.39 },
+      { name: "Cerveja Império Puro Malte Lt 350ml C/15", saoVicente: 41.85, enxuto: 43.30 },
+    ];
+
+    // Função para formatar moeda
+    function formatCurrency(value) {
+      return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Função para calcular a diferença percentual
+    function calculatePercentageDiff(a, b) {
+      return ((b - a) / a * 100).toFixed(1);
+    }
+
+    // Função para criar a tabela
+    function createTable() {
+      const tableBody = document.querySelector("#comparisonTable tbody");
+      const currentDateElement = document.getElementById("current-date");
+      
+      // Atualiza a data atual
+      const options = { day: '2-digit', month: 'long', year: 'numeric' };
+      currentDateElement.textContent = new Date().toLocaleDateString('pt-BR', options);
+      
+      // Limpa o corpo da tabela
+      tableBody.innerHTML = '';
+
+      products.forEach(product => {
+        const difference = (product.enxuto - product.saoVicente).toFixed(2);
+        const percentageDiff = calculatePercentageDiff(product.saoVicente, product.enxuto);
+        const differenceClass = difference > 0 ? 'positive' : difference < 0 ? 'negative' : 'neutral';
+        
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${product.name}</td>
+          <td>${formatCurrency(product.saoVicente)}</td>
+          <td>${formatCurrency(product.enxuto)}</td>
+          <td class="${differenceClass}">
+            <span class="difference-badge ${differenceClass}-badge">
+              ${formatCurrency(Math.abs(difference))} (${Math.abs(percentageDiff)}%)
+            </span>
+          </td>
+        `;
+        
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Executa a função ao carregar a página
+    document.addEventListener('DOMContentLoaded', createTable);
+  </script>
+</body>
+</html>
