@@ -32,3 +32,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 netplwiz
 https://github.com/EbolaMan-YT/UAC-Bypass
+set __compat_layer=runasinvoker
+cmd /min /C "set __compat_layer=runasinvoker && start "" "%1"
+gpedit.msc
+gpupdate /force
